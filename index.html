@@ -119,10 +119,10 @@ h1,.big,.h2{font-family:"Archivo Black",sans-serif;letter-spacing:-.02em;line-he
 .reveal .h2{font-size:clamp(34px,10vw,46px);margin-bottom:14px}
 
 /* Spotify-Player */
-#spot{position:fixed;left:0;right:0;bottom:0;padding:40px 16px max(16px,env(safe-area-inset-bottom));background:linear-gradient(to bottom,transparent,#24170f 45%);z-index:8;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .6s,transform .6s}
+#spot{position:fixed;left:0;right:0;top:max(30px,calc(env(safe-area-inset-top) + 24px));padding:0 16px 46px;background:linear-gradient(to top,transparent,#24170f 30%);z-index:8;opacity:0;pointer-events:none;transform:translateY(-20px);transition:opacity .6s,transform .6s}
 #spot.on{opacity:1;pointer-events:auto;transform:none}
 #spotFrame{border:0;border-radius:12px;display:block;width:100%;height:152px;background:#3a2a1e}
-.spot-hint{color:#f1e7d8;font:700 14px Inter;text-align:center;margin-bottom:10px;animation:nudge 1.4s ease-in-out infinite}
+.spot-hint{color:#f1e7d8;font:700 14px Inter;text-align:center;margin-top:12px;animation:nudge 1.4s ease-in-out infinite}
 .spot-hint.gone{display:none}
 .spot-big{display:none;align-items:center;justify-content:center;gap:10px;background:#1db954;color:#121212;font:800 17px Inter;padding:18px;border-radius:999px;text-decoration:none}
 #spot.local .spot-big{display:flex}
@@ -131,7 +131,7 @@ h1,.big,.h2{font-family:"Archivo Black",sans-serif;letter-spacing:-.02em;line-he
 @keyframes nudge{50%{transform:translateY(-4px)}}
 
 /* Zeilen */
-.lines-card .meta{position:relative;z-index:2;display:flex;gap:12px;align-items:center}
+.lines-card .meta{display:none}
 .eq{display:flex;gap:3px;align-items:flex-end;height:20px}
 .eq i{width:4px;background:var(--ac);border-radius:2px;animation:eq .9s ease-in-out infinite}
 .eq i:nth-child(2){animation-delay:.2s}.eq i:nth-child(3){animation-delay:.4s}.eq i:nth-child(4){animation-delay:.1s}
@@ -171,10 +171,11 @@ h1,.big,.h2{font-family:"Archivo Black",sans-serif;letter-spacing:-.02em;line-he
   </section>
 </div>
 <canvas id="fx"></canvas>
-<div id="spot"><div class="spot-hint" id="spotHint">Tippe auf ▶︎, um deinen Song zu starten</div>
+<div id="spot">
   <iframe id="spotFrame" title="Spotify" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="eager"></iframe>
   <a class="spot-big" id="spotBig" target="_blank" rel="noopener">▶︎ Unseren Song in Spotify abspielen</a>
-  <a class="spot-link" id="spotLink" target="_blank" rel="noopener">Player lädt nicht? Hier in Spotify öffnen ↗</a></div>
+  <a class="spot-link" id="spotLink" target="_blank" rel="noopener">Player lädt nicht? Hier in Spotify öffnen ↗</a>
+  <div class="spot-hint" id="spotHint">Tippe auf ▶︎, um deinen Song zu starten</div></div>
 
 <script>
 /* ============================================================
@@ -274,7 +275,7 @@ spotLink.addEventListener("click", () => songStarted());
 const spotBig = $("#spotBig"); spotBig.href = spotLink.href;
 spotBig.addEventListener("click", () => songStarted());
 // Als lokale Datei geöffnet (file://) zeigt Spotify seinen Player nicht an – dann großer Button statt Player
-if (location.protocol === "file:") { $("#spot").classList.add("local"); $("#spotHint").textContent = "Tippe hier, um deinen Song zu starten 🎶"; }
+if (location.protocol === "file:") { $("#spot").classList.add("local"); $("#spotHint").textContent = "Tippe oben, um deinen Song zu starten 🎶"; }
 let spotEverPlayed = false, playAt = 0;
 function songStarted(){
   if (spotEverPlayed || cards[idx].type !== "lines") return;
@@ -459,7 +460,7 @@ const R = {
     let last=-1, hearted=false;
     const go = k => {
       els.forEach((el,j)=>{ el.classList.toggle("on",j===k); el.classList.toggle("past",j<k); });
-      box.style.transform = `translateY(${stage.clientHeight*.36 - els[k].offsetTop - els[k].offsetHeight/2}px)`;
+      box.style.transform = `translateY(${stage.clientHeight*.5 - els[k].offsetTop - els[k].offsetHeight/2}px)`;
     };
     go(0);
     $("#spot").classList.add("on");
