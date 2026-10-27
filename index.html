@@ -127,7 +127,7 @@ h1,.big,.h2{font-family:"Archivo Black",sans-serif;letter-spacing:-.02em;line-he
 .spot-big{display:none;align-items:center;justify-content:center;gap:10px;background:#1db954;color:#121212;font:800 17px Inter;padding:18px;border-radius:999px;text-decoration:none}
 #spot.local .spot-big{display:flex}
 #spot.local #spotFrame,#spot.local .spot-link{display:none}
-.spot-link{display:block;text-align:center;color:#d4a373;font:600 13px Inter;margin-top:10px;text-decoration:underline}
+.spot-link{display:none;text-align:center;color:#d4a373;font:600 13px Inter;margin-top:10px;text-decoration:underline}
 @keyframes nudge{50%{transform:translateY(-4px)}}
 
 /* Zeilen */
@@ -174,7 +174,7 @@ h1,.big,.h2{font-family:"Archivo Black",sans-serif;letter-spacing:-.02em;line-he
 <div id="spot">
   <iframe id="spotFrame" title="Spotify" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="eager"></iframe>
   <a class="spot-big" id="spotBig" target="_blank" rel="noopener">▶︎ Unseren Song in Spotify abspielen</a>
-  <a class="spot-link" id="spotLink" target="_blank" rel="noopener">Player lädt nicht? Hier in Spotify öffnen ↗</a>
+  <a class="spot-link" id="spotLink" target="_blank" rel="noopener" hidden></a>
   <div class="spot-hint" id="spotHint">Tippe auf ▶︎, um deinen Song zu starten</div></div>
 
 <script>
