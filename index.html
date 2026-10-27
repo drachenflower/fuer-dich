@@ -86,6 +86,8 @@ h1,.big,.h2{font-family:"Archivo Black",sans-serif;letter-spacing:-.02em;line-he
 .gallery .pile .snap{position:absolute;left:50%;top:48%;width:min(74%,320px);aspect-ratio:4/5;translate:-50% -50%;
   animation:drop .55s cubic-bezier(.2,1.3,.4,1) both}
 @keyframes drop{from{opacity:0;scale:1.5}to{opacity:1;scale:1}}
+.gal-hint{position:relative;text-align:center;font:700 14px Inter;opacity:.75;margin-top:10px}
+.gal-hint.done{opacity:1;animation:nudge 1.4s ease-in-out infinite}
 .gallery .count{font:400 22px "Archivo Black";position:relative;text-align:center;margin-top:6px}
 
 /* Herz */
@@ -233,13 +235,10 @@ const CONFIG = {
     // "at" = Sekunde, ab der die Zeile erscheint (passt in die 30-Sekunden-Vorschau)
     { type: "lines", theme: "night", title: "Sommer macht melancholisch", artist: "Provinz", lines: [
       { at: 0,  text: "Für dich ♡" },
-      { at: 3,  text: "16.641 Nachrichten," },
-      { at: 6.5,text: "287 WhatsApp-Anrufe (FaceTime nicht mitgezählt)," },
-      { at: 10.5,text: "ein Telefonat, das 16 Stunden ging," },
-      { at: 14, text: "Samstagabende mit Wein und zusammen kochen 🥹" },
-      { at: 18, text: "Danke für jeden einzelnen Moment." },
-      { at: 22, text: "Ich hab dich ganz doll lieb ♡" },
-      { at: 26, text: "Alles Liebe zum Geburtstag!" }
+      { at: 5,  text: "Donnerstagabende mit dir auf der Couch 🥹" },
+      { at: 10.5, text: "Danke für jeden einzelnen Moment." },
+      { at: 16, text: "Ich hab dich ganz doll lieb ♡" },
+      { at: 22, text: "Alles Liebe zum Geburtstag!" }
     ]}
   ]
 };
@@ -391,15 +390,23 @@ const R = {
   gallery(c,i){
     stage.innerHTML = `<div class="card gallery">${squig(i)}
       <div class="rise" style="position:relative"><span class="tag">${c.title}</span></div>
-      <div class="pile" id="pile"></div><div class="count" id="gcount"></div></div>`;
-    const pile=$("#pile"), cnt=$("#gcount"); let shown=0;
-    return { update(e){
+      <div class="pile" id="pile"></div><div class="count" id="gcount"></div>
+      <div class="gal-hint" id="ghint">Tippen für das nächste Foto</div></div>`;
+    const pile=$("#pile"), cnt=$("#gcount"), hint=$("#ghint"); let shown=0, doneAt=0;
+    return {
+      // Tippen während der Fotos: nächstes Foto statt nächste Karte
+      tap(){
+        if(shown < c.photos.length){ elapsed = shown*GAL_STEP; return true; }
+        return performance.now() - doneAt < 1000;  // kurz sperren, damit man nicht aus Versehen weiterspringt
+      },
+      update(e){
       const n=Math.min(Math.floor(e/GAL_STEP)+1, c.photos.length);
       while(shown<n){
         const rot=(Math.random()*16-8).toFixed(1), dx=(Math.random()*30-15).toFixed(0);
         pile.insertAdjacentHTML("beforeend", snap(c.photos[shown],"",`rotate:${rot}deg;margin-left:${dx}px;z-index:${shown}`));
         shown++; cnt.textContent = `${shown} / ${c.photos.length}`;
-        if(shown===c.photos.length){ const r=pile.getBoundingClientRect(); hearts(r.left+r.width/2, r.top+r.height/2, 14); }
+        if(shown===c.photos.length){ const r=pile.getBoundingClientRect(); hearts(r.left+r.width/2, r.top+r.height/2, 14);
+          hint.textContent="Tippen, um weiterzumachen →"; hint.classList.add("done"); doneAt=performance.now(); }
       }
     }};
   },
@@ -488,7 +495,7 @@ const R = {
 const msgTokens = c => c.text.replace(/\n/g," \n ").split(" ").filter(Boolean);
 const fixedDur = c => c.duration || (
   c.type==="top" ? 8500 :
-  c.type==="gallery" ? c.photos.length*GAL_STEP + 2500 :
+  c.type==="gallery" ? c.photos.length*GAL_STEP + 5000 :
   c.type==="message" ? 1600 + msgTokens(c).length*90 + 12000 :
   7000);
 
@@ -521,6 +528,7 @@ stories.addEventListener("pointerup", e => {
   if(e.clientX<innerWidth*.3) prev();
   else if(t==="final" || idx===cards.length-1) hearts(e.clientX,e.clientY,10);
   else if(t==="riddle"){ if(solved) next(); }
+  else if(cur.tap && cur.tap()) {}
   else next();
 });
 stories.addEventListener("pointercancel",()=>{ clearTimeout(holdT); if(paused) setPaused(false); });
